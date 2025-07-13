@@ -168,14 +168,14 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def count_documents(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         *,
         session: Optional[AsyncClientSession] = None,
         **kwargs: Any,
     ) -> int:
         return await run_sync(
             self.dispatch.count_documents,
-            query,
+            filter,
             session=session.dispatch if session else session,
             **kwargs,
         )
@@ -199,7 +199,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def delete_many(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         *,
         collation: Optional[Collation] = None,
         hint: Optional[Union[IndexModel, List[Tuple[str, Any]]]] = None,
@@ -207,7 +207,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> DeleteResult:
         return await run_sync(
             self.dispatch.delete_many,
-            query,
+            filter,
             collation=collation,
             hint=hint,
             session=session.dispatch if session else session,
@@ -215,7 +215,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def delete_one(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         *,
         collation: Optional[Collation] = None,
         hint: Optional[Union[IndexModel, List[Tuple[str, Any]]]] = None,
@@ -223,7 +223,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> DeleteResult:
         return await run_sync(
             self.dispatch.delete_one,
-            query,
+            filter,
             collation=collation,
             hint=hint,
             session=session.dispatch if session else session,
@@ -232,7 +232,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     async def distinct(
         self,
         key: str,
-        query: Optional[Mapping[str, Any]] = None,
+        filter: Optional[Mapping[str, Any]] = None,
         *,
         session: Optional[AsyncClientSession] = None,
         **kwargs: Any,
@@ -240,7 +240,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
         return await run_sync(
             self.dispatch.distinct,
             key,
-            filter=query,
+            filter=filter,
             session=session.dispatch if session else session,
             **kwargs,
         )
@@ -274,13 +274,13 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
         return AsyncCursor(Cursor(self, *args, **kwargs), self)
 
     async def find_one(
-        self, query: Optional[Mapping[str, Any]], *args: Any, **kwargs: Any
+        self, filter: Optional[Mapping[str, Any]], *args: Any, **kwargs: Any
     ) -> Optional[Mapping[str, Any]]:
-        return await run_sync(self.dispatch.find_one, query, *args, **kwargs)
+        return await run_sync(self.dispatch.find_one, filter, *args, **kwargs)
 
     async def find_one_and_delete(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         *,
         projection: Optional[Union[List[Any], Mapping[str, Any]]] = None,
         sort: Optional[List[Tuple[str, Any]]] = None,
@@ -290,7 +290,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> Mapping[str, Any]:
         return await run_sync(
             self.dispatch.find_one_and_delete,
-            query,
+            filter,
             projection=projection,
             sort=sort,
             hint=hint,
@@ -300,7 +300,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def find_one_and_replace(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         replacement: Mapping[str, Any],
         *,
         projection: Optional[Union[List[Any], Mapping[str, Any]]] = None,
@@ -313,7 +313,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> Mapping[str, Any]:
         return await run_sync(
             self.dispatch.find_one_and_replace,
-            query,
+            filter,
             replacement,
             projection=projection,
             sort=sort,
@@ -326,7 +326,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def find_one_and_update(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         update: Mapping[str, Any],
         *,
         projection: Optional[Union[List[Any], Mapping[str, Any]]] = None,
@@ -340,7 +340,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> Mapping[str, Any]:
         return await run_sync(
             self.dispatch.find_one_and_update,
-            query,
+            filter,
             update,
             projection=projection,
             sort=sort,
@@ -426,7 +426,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def replace_one(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         replacement: Mapping[str, Any],
         *,
         upsert: bool = False,
@@ -437,7 +437,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> UpdateResult:
         return await run_sync(
             self.dispatch.replace_one,
-            query,
+            filter,
             replacement,
             upsert=upsert,
             bypass_document_validation=bypass_document_validation,
@@ -448,7 +448,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def update_many(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         update: Mapping[str, Any],
         *,
         upsert: bool = False,
@@ -460,7 +460,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> UpdateResult:
         return await run_sync(
             self.dispatch.update_many,
-            query,
+            filter,
             update,
             upsert=upsert,
             array_filters=array_filters,
@@ -472,7 +472,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
 
     async def update_one(
         self,
-        query: Mapping[str, Any],
+        filter: Mapping[str, Any],
         update: Mapping[str, Any],
         *,
         upsert: bool = False,
@@ -484,7 +484,7 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     ) -> UpdateResult:
         return await run_sync(
             self.dispatch.update_one,
-            query,
+            filter,
             update,
             upsert=upsert,
             array_filters=array_filters,
