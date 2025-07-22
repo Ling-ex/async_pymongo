@@ -165,6 +165,7 @@ class AsyncLatentCommandCursor(AsyncCommandCursor):
     and will be overwrite by :obj:`~asyncio.Future`"""
 
     dispatch: Union[CommandCursor, RawBatchCommandCursor]
+    _cursor_initialized_future: Optional[asyncio.Future]
 
     def __init__(
         self,
@@ -178,6 +179,14 @@ class AsyncLatentCommandCursor(AsyncCommandCursor):
         self.kwargs = kwargs
 
         super().__init__(_LatentCursor(collection), collection)
+        self._cursor_initialized_future = self.loop.create_future()
+
+    def __await__(self):
+        if not self.started:
+            self._get_more()
+
+        yield from self._cursor_initialized_future.__await__()
+        return self
 
     def batch_size(self, batch_size: int) -> "AsyncLatentCommandCursor":
         self.kwargs["batchSize"] = batch_size
@@ -206,9 +215,13 @@ class AsyncLatentCommandCursor(AsyncCommandCursor):
     ) -> None:
         try:
             self.dispatch = future.result()
+            if not self._cursor_initialized_future.done():
+                self._cursor_initialized_future.set_result(None)
         except Exception as exc:  # skipcq: PYL-W0703
             if not original_future.done():
                 original_future.set_exception(exc)
+            if not self._cursor_initialized_future.done():
+                self._cursor_initialized_future.set_exception(exc)
         else:
             # Return early if the task was cancelled.
             if original_future.done():

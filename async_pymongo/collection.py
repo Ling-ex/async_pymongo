@@ -119,14 +119,14 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
     def __hash__(self) -> int:
         return hash((self.database, self.name))
 
-    def aggregate(
+    async def aggregate(
         self,
         pipeline: List[Mapping[str, Any]],
         *args: Any,
         session: Optional[AsyncClientSession] = None,
         **kwargs: Any,
     ) -> AsyncLatentCommandCursor:
-        return AsyncLatentCommandCursor(
+        latent_cursor = AsyncLatentCommandCursor(
             self,
             self.dispatch.aggregate,
             pipeline,
@@ -134,21 +134,24 @@ class AsyncCollection(AsyncBaseProperty, Generic[_DocumentType]):
             *args,
             **kwargs,
         )
+        return await latent_cursor
 
-    def aggregate_raw_batches(
+    async def aggregate_raw_batches(
         self,
         pipeline: List[Mapping[str, Any]],
         *,
         session: Optional[AsyncClientSession] = None,
         **kwargs: Any,
     ) -> AsyncLatentCommandCursor:
-        return AsyncLatentCommandCursor(
+        latent_cursor = AsyncLatentCommandCursor(
             self,
             self.dispatch.aggregate_raw_batches,
             pipeline,
             session=session.dispatch if session else session,
             **kwargs,
         )
+        return await latent_cursor
+
 
     async def bulk_write(
         self,
